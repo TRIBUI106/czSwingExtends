@@ -13,8 +13,6 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 
-// Dùng để gửi email
-
 public class czEmail {
 
     private final String username;
@@ -30,7 +28,7 @@ public class czEmail {
     }
 
     // Hàm gửi email
-    public void sendMail(int i, String email, String name) {
+    public void sendMail(int i, String email, String name, int type) {
         if (username == null || password == null) {
             System.out.println("Lỗi: Biến môi trường chưa được thiết lập.");
             return;
@@ -58,25 +56,51 @@ public class czEmail {
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(email.trim().toLowerCase()));
             message.setSubject("G-RentX Confirmation");
 
-            // Cấu hình nội dung email dựa trên tham số i
-            String content = "<html>"
-                    + "<body style='font-family: Arial, sans-serif;'>"
-                    + "<div style='width: 100%; max-width: 600px; margin: auto; padding: 20px; background-color: #f8f9fa; border-radius: 8px;'>"
-                    + "<h2 style='color: #333;'>Xác thực tài khoản G-RentX</h2>"
-                    + "<p style='font-size: 16px;'>Chào " + name + "!</p>"
-                    + "<p style='font-size: 16px;'>Mã OTP của bạn là: <strong style='color: #007bff;'>" + i
-                    + "</strong></p>"
-                    + "<p style='font-size: 16px;'>Vui lòng nhập mã OTP này để xác thực.</p>"
-                    + "<hr>"
-                    + "<p style='font-size: 14px; color: #888;'>Nếu bạn không yêu cầu tạo tài khoản tại G-RentX, vui lòng bỏ qua email này.</p>"
-                    + "</div>"
-                    + "</body>"
-                    + "</html>";
+            String content = "";
 
+            switch (type) {
+//                type 0 == create account
+//                type 1 == forgot password
+                case 0:
+                    content = "<html>"
+                            + "<body style='font-family: Arial, sans-serif;'>"
+                            + "<div style='width: 100%; max-width: 600px; margin: auto; padding: 20px; background-color: #f8f9fa; border-radius: 8px;'>"
+                            + "<h2 style='color: #333;'>Xác thực tài khoản G-RentX</h2>"
+                            + "<p style='font-size: 16px;'>Chào " + name + "!</p>"
+                            + "<p style='font-size: 16px;'>Mã OTP của bạn là: <strong style='color: #007bff;'>" + i + "</strong></p>"
+                            + "<p style='font-size: 16px;'>Vui lòng nhập mã OTP này để xác thực.</p>"
+                            + "<hr>"
+                            + "<p style='font-size: 14px; color: #888;'>Nếu bạn không yêu cầu tạo tài khoản tại G-RentX, vui lòng bỏ qua email này.</p>"
+                            + "</div>"
+                            + "</body>"
+                            + "</html>";
+                    break;
+                case 1:
+                    content = "<html>"
+                            + "<body style='font-family: Arial, sans-serif;'>"
+                            + "<div style='width: 100%; max-width: 600px; margin: auto; padding: 20px; background-color: #f0f4f8; border-radius: 8px;'>"
+                            + "<h2 style='color: #333;'>Khôi phục mật khẩu G-RentX</h2>"
+                            + "<p style='font-size: 16px;'>Chào <strong style='color: #007bff;'>" + name + "</strong>!</p>"
+                            + "<p style='font-size: 16px;'>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>"
+                            + "<p style='font-size: 16px;'>Mã OTP để đặt lại mật khẩu là: <strong style='color: #dc3545;'>" + i + "</strong></p>"
+                            + "<p style='font-size: 16px;'>Vui lòng sử dụng mã này để hoàn tất quá trình khôi phục.</p>"
+                            + "<hr>"
+                            + "<p style='font-size: 14px; color: #888;'>Nếu bạn không yêu cầu khôi phục mật khẩu cho tài khoản <strong>" + name + "</strong>, vui lòng bỏ qua email này.</p>"
+                            + "</div>"
+                            + "</body>"
+                            + "</html>";
+                    break;
+                default:
+                    content = "";
+                    czAnnonce.showErr("Lỗi không xác định !");
+                    return;
+            }
+
+            // Cấu hình nội dung email dựa trên tham số i
             message.setContent(content, "text/html; charset=utf-8");
 
             // Gửi email
-            // session.setDebug(true);
+//            session.setDebug(true);
             Transport.send(message);
             System.out.println("Email đã được gửi thành công đến: " + email);
         } catch (MessagingException e) {
@@ -88,8 +112,7 @@ public class czEmail {
         }
     }
 
-    public static void main(String[] args) {
-        new czEmail().sendMail(293473, "toptrainghieml@gmail.com", "toptrainghieml@gmail.com");
-    }
-
+//    public static void main(String[] args) {
+//        new czEmail().sendMail(293473, "toptrainghieml@gmail.com", "toptrainghieml@gmail.com");
+//    }
 }
